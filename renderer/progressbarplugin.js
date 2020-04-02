@@ -5,9 +5,9 @@ Plugin.extend({
     _stageId: 0,
     _socreInstance: {},
     initPlugin: function(data) {
+        var instance = this;
+        var assessData = '';
         this._data = data; 
-        var instance = this;        
-        instance.showProgressBarTemplate(data);
         EventBus.listeners.telemetryEvent = [];
         EventBus.addEventListener("telemetryEvent", this.getOEAssessData,this);
         var progressbarObject = this._theme.getParam("progressbarObj");
@@ -24,16 +24,18 @@ Plugin.extend({
                 assessData = progressbarObject[currentStageid];
             }
         }
+        // to update DOM for old content pass assessData
+        instance.showProgressBarTemplate(data,assessData);
         instance.updateProgressBar();
     },
-    showProgressBarTemplate: function(data){
+    showProgressBarTemplate: function(data, assessData){
         var instance = this;
         var progressBarTemplate = '<div class="container" style="width:100%; display:flex;">';
         var barWidth = data.w / data.questions;
         for (var i = 0; i < data.questions; i++) {
             progressBarTemplate = progressBarTemplate + '<div class="col'+ i +'" style="background-color:white;height: 35px;padding: 1%;border: 1px solid black;width:'+barWidth+'%;"></div>';
         }
-        progressBarTemplate = progressBarTemplate + '<p id="q-count" style="font-size: xx-large;">0/'+data.questions+'</p></div>';
+        progressBarTemplate = progressBarTemplate + '<p id="q-count" style="font-size: xx-large;">'+assessData.length +'/'+data.questions+'</p></div>';
         var div = document.getElementById(instance._data.id);
         if (div) {
             jQuery("#" + instance._data.id).remove();
@@ -89,7 +91,7 @@ Plugin.extend({
 
             var attemptedQuestions;
             var attemptedQuestions = assessData.length;
-            //_.where(instance._socreInstance._self.children, { id: "itemTextId" })[0].text = attemptedQuestions + "/" + instance._data.questions;
+            // to update DOM for new content
             instance._attemptedQ = attemptedQuestions + "/" + instance._data.questions;
             $("#q-count").text(instance._attemptedQ);
             instance.updateProgressBar(instance);
