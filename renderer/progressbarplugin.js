@@ -35,7 +35,9 @@ Plugin.extend({
         for (var i = 0; i < data.questions; i++) {
             progressBarTemplate = progressBarTemplate + '<div class="col'+ i +'" style="background-color:white;height: 35px;padding: 1%;border: 1px solid black;width:'+barWidth+'%;"></div>';
         }
-        progressBarTemplate = progressBarTemplate + '<p id="q-count" style="font-size: xx-large;">'+assessData.length +'/'+data.questions+'</p></div>';
+        // if Questions are more than progress bar count
+        var progressCount = (assessData.length > data.questions) ? data.questions : assessData.length
+        progressBarTemplate = progressBarTemplate + '<p id="q-count" style="font-size: xx-large;">'+progressCount +'/'+data.questions+'</p></div>';
         var div = document.getElementById(instance._data.id);
         if (div) {
             jQuery("#" + instance._data.id).remove();
@@ -88,12 +90,12 @@ Plugin.extend({
                 var progressObj = JSON.parse(JSON.stringify(progressbarObject));
                 instance._theme.setParam("progressbarObj", progressObj);
             }
-
-            var attemptedQuestions;
-            var attemptedQuestions = assessData.length;
+            // if Questions are more than progress bar count
+            var attemptedQuestions = (assessData.length > instance._data.questions) ? instance._data.questions : assessData.length;
             // to update DOM for new content
             instance._attemptedQ = attemptedQuestions + "/" + instance._data.questions;
             $("#q-count").text(instance._attemptedQ);
+            // to update DOM for new content
             instance.updateProgressBar(instance);
         }     
     },
